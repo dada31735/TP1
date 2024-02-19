@@ -1,3 +1,7 @@
+/**
+ * @author Dumitru Gliga
+ * @version 1.0.0
+ */
 public class Composant {
     //region déclaration des donnés membres
     private String categorie, nom, marque;

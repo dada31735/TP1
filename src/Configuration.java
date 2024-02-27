@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 /**
  * @author Dumitru Gliga
  * @version 1.0.0
@@ -16,6 +18,14 @@ public class Configuration {
         setDescription(description);
         setPrixMaximal(prixMaximal);
         setListeComposants(composants);
+    }
+
+    public Configuration(Configuration originale){
+        Composant[] listeCopie = new Composant[listeComposants.length];
+        for (int i = 0; i < listeComposants.length; i++) {
+            listeCopie[i] = listeComposants[i].copier();
+        }
+        new Configuration(description, prixMaximal, listeCopie);
     }
     //endregion
 
@@ -64,12 +74,14 @@ public class Configuration {
      * Accesseur de la donné membre 'listeComposants'
      * @return la donné membre 'listeComposants'
      */
-    public Composant[] getListeComposants() {
+    public Composant[] getComposants() {
         return listeComposants;
     }
 
     public void setListeComposants(Composant[] listeComposants) { // <------ QUESTION  (copie d'adresse ou de qui est-ce qui est à l'intérieure du tableau)
-        this.listeComposants = listeComposants;
+        for (int i = 0; i < listeComposants.length; i++) {
+            this.listeComposants[i] = listeComposants[i];
+        }
     }
 
     /**
@@ -90,6 +102,86 @@ public class Configuration {
         this.nbComposants = nbComposants;
     }
 
+    //endregion
+
+    //region autres methodes
+    public double calculerTotal(double taxe){
+        double total = 0.0;
+        for (int i = 0; i < listeComposants.length; i++) {
+            total += listeComposants[i].getPrix();
+        }
+        return (total*(1+taxe));
+    }
+
+    public Composant rechercher(String categorie){
+        for (int i = 0; i < listeComposants.length; i++) {
+            if (categorie.toUpperCase().equals(listeComposants[i].getCategorie())){ //see if toUpper is needed
+                return listeComposants[i];
+            }
+        }
+        return null;
+    }
+
+    public boolean ajouter(Composant composant){
+        if (composant != null){
+            for (int i = 0; i < listeComposants.length; i++) {
+                if (composant.getCategorie().toUpperCase().equals(listeComposants[i].getCategorie())){ //see if toUpper is needed again !
+                    return false;
+                }
+                else if (nbComposants == MAX_COMPOSANTS) {
+                    return false;
+                }
+                else{
+                    double prixTotal = 0.0;
+                    for (int j = 0; j < listeComposants.length; j++) {
+                        prixTotal+=listeComposants[i].getPrix();
+                    }
+                    prixTotal+=composant.getPrix();
+                    if (prixTotal >= prixMaximal)
+                        return false;
+                }
+            }
+        }
+        listeComposants[nbComposants] = composant;
+        nbComposants++;
+        return true;
+    }
+
+    public boolean retirer(Composant composant){
+        Composant composantARetirer = rechercher(composant.getCategorie());
+
+        for (int i = 0; i < listeComposants.length; i++) {
+            if (composantARetirer == null){
+                return false;
+            }
+            if (listeComposants[i].equals(composantARetirer)){
+                for (int j = i; j < listeComposants.length; j++) {
+                    listeComposants[j] = listeComposants[j+1];
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean remplacer(Composant composant){
+        if (retirer(composant)){
+            ajouter(composant);
+            return true;
+        } else return false;
+    }
+
+    public String toString(){
+
+        String resultat = ""+description+" ("+prixMaximal+") :/n";
+
+        for (int i = 0; i < listeComposants.length; i++) {
+            if (listeComposants[i] != null){
+                resultat += "1 : "+listeComposants[i]+" ("+listeComposants[i].getPrix()+")";
+            }
+        }
+        return resultat;
+    }
     //endregion
 
 }

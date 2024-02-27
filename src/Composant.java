@@ -42,7 +42,7 @@ public class Composant {
             System.out.println("Catégorie invalide!");
             return;
         }
-        this.categorie = categorie.toUpperCase();
+        this.categorie = categorie.toUpperCase().trim();
     }
 
     /**
@@ -92,7 +92,7 @@ public class Composant {
      * @return la donné membre 'prix' - le rabais
      */
     public double getPrix() {
-        return prix - rabais*100;
+        return (prix - (prix*rabais));
     }
 
     /**
